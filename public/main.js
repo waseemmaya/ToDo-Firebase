@@ -1,5 +1,5 @@
 var _db = firebase.database();
-
+fetchTasks();
 function addTask() {
   let form = document.querySelector("form");
   let formData = new FormData(form);
@@ -35,9 +35,14 @@ function addTask() {
 }
 
 function fetchTasks() {
-  var table = document.querySelector("table");
+  var table = document.querySelector("tbody");
   // getting tasks Reference (node) for showing them
   let tasksRef = _db.ref("All Tasks");
+  tasksRef.on("child_added", data => {
+    // console.log(data.val(), data.key);
+    var row = generateRow(data.val(), data.key);
+    console.log(row);
+  });
 }
 
 // function fetchTask() {

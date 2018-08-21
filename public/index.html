@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>To Do App - Firebase</title>
-    <script src="main.js"></script>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
         crossorigin="anonymous">
 
@@ -16,109 +16,48 @@
     <div class="container">
         <h3 class="display-4 mb-3 text-center">Firebase To DO App</h3>
 
-        <form>
+        <form onsubmit="return addTask()">
             <div class="form-group">
-                <input class="form-control" type="text" id="title" placeholder="Title">
+                <input class="form-control" type="text" name="title" placeholder="Title">
             </div>
             <div class="form-group">
-                <textarea class="form-control" id="body" placeholder="Add Your Task Here..."></textarea>
+                <textarea class="form-control" name="description" placeholder="Add Your Task Here..."></textarea>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-primary mb-3" value="Submit">Submit</button>
             </div>
 
         </form>
-        <div class="text-center">
-            <button class="btn btn-primary mb-3" value="Submit" onclick="addTask()">Submit</button>
-        </div>
-        <div id="tasks">
 
+        <div id="tasks">
+            <table class="table table-hover">
+                <th>Title</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Task State</th>
+            </table>
         </div>
     </div>
-        
-       
+
+
+    <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyCZRIB0SbdbOzaxDCqYRwL604aOso4Wavs",
+            authDomain: "todo-myapp-firebase.firebaseapp.com",
+            databaseURL: "https://todo-myapp-firebase.firebaseio.com",
+            projectId: "todo-myapp-firebase",
+            storageBucket: "todo-myapp-firebase.appspot.com",
+            messagingSenderId: "220996475134"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <script src="main.js"></script>
 </body>
 
-<script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
-<script>
-    // Initialize Firebase
-    var config = {
-        apiKey: "AIzaSyCZRIB0SbdbOzaxDCqYRwL604aOso4Wavs",
-        authDomain: "todo-myapp-firebase.firebaseapp.com",
-        databaseURL: "https://todo-myapp-firebase.firebaseio.com",
-        projectId: "todo-myapp-firebase",
-        storageBucket: "todo-myapp-firebase.appspot.com",
-        messagingSenderId: "220996475134"
-    };
-    firebase.initializeApp(config);
-</script>
-
-<script>
-
-function addTask() {
-  var database = firebase.database()
-  var title = document.getElementById("title").value;
-  var body = document.getElementById("body").value;
-  var taskID = Math.floor(100444000 + Math.random() * 90012000);
-
-  var allTasks = database.ref(`All Tasks/${taskID}`);
-  allTasks.set({
-    Title: title,
-    Description: body,
-    taskID: taskID,
-    date: new Date().toDateString()
-  });
-  console.log("Task Posted");
-  document.querySelector("form").reset();
-
-  return false;
-}
-fetchTask();
-function fetchTask() {
-  var taskDiv = document.getElementById("tasks");
-  var database = firebase.database()
-  var tasksRef = database.ref(`All Tasks`);
-  tasksRef.on('child_added', function(snapshot) {
-    var getTask = gettingData(snapshot.val(), snapshot.key);
-    taskDiv.innerHTML += getTask;
-  });
-
-  function gettingData(snapshot, key) {
-    const rr = `
-    <li class="list-group mb-1">
-        <ul class="list-group-item">Title : ${
-          snapshot.Title
-        }</ul>
-        <ul class="list-group-item">Body : ${snapshot.Description}</ul>
-        <ul class="list-group-item">Time : ${snapshot.date}</ul>
-         <ul class="list-group-item"><button onClick="deleteTask(${snapshot.taskID})" class="myButton btn btn-sm btn-danger float-right">
-                               Delete
-                               </button>
-                               <button onClick="editTask(${
-                                 snapshot.taskID
-                               },'${
-snapshot.Title
-}')" class="myButton btn btn-sm btn-warning float-right">
-                               Edit 
-                               </button></ul>
-       
-    </li>
-    `;
-    return rr;
-}
-}
-
-function deleteTask(taskID) {
-  var database = firebase.database()
-  var deleteTask = database.ref(`All Tasks/${taskID}`);
-  deleteTask.remove().then(function () {
-    
-    console.log("deleting", taskID);
-    console.log("fetching newest data");
-    
-
-  })
- 
-}
 
 
-</script>
+
 
 </html>

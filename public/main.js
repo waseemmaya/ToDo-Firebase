@@ -3,10 +3,12 @@ fetchTasks();
 function addTask() {
   let form = document.querySelector("form");
   let formData = new FormData(form);
+  let key = Math.floor(100444000 + Math.random() * 90012000);
+  let bodyId = Math.floor(1004443000 + Math.random() * 940012000);
 
   // creating new node in Firebase Database
   // .push() create unique KEY for sent data
-  let tasksRef = _db.ref("All Tasks").push();
+  let tasksRef = _db.ref(`All Tasks/${key}`);
   // .push() initialize a key for taskObj   // key ===> LKTXVheZ6JVBniEi8Ti
 
   console.log(tasksRef.key);
@@ -26,9 +28,12 @@ function addTask() {
     title: formData.get("title"),
     description: formData.get("description"),
     timeStamp: new Date().toDateString(),
-    taskState: false
+    taskState: false,
+    bodyId: bodyId
   });
-  console.log("Task pushed");
+
+  // console.log(tasksRef);
+  // console.log(tasksRefd);
 
   form.reset();
   return false;
@@ -38,11 +43,74 @@ function fetchTasks() {
   var table = document.querySelector("tbody");
   // getting tasks Reference (node) for showing them
   let tasksRef = _db.ref("All Tasks");
-  tasksRef.on("child_added", data => {
-    // console.log(data.val(), data.key);
-    var row = generateRow(data.val(), data.key);
-    console.log(row);
+  tasksRef.on("child_added", function(snapshot) {
+    // console.log(snapshot.key);
+
+    // var row = generateRow(snapshot.val(), snapshot.key);
+    // console.log(a);
+    var a = document.getElementById("tasks");
+    a.innerHTML += `
+                        <li class="list-group mb-1" id="${snapshot.key}">
+                            <ul class="list-group-item">Title : ${
+                              snapshot.val().title
+                            }</ul>
+                            <ul class="list-group-item" id="${
+                              snapshot.val().bodyId
+                            }">Body : ${snapshot.val().description}</ul>
+                            <ul class="list-group-item">Time : ${
+                              snapshot.val().timeStamp
+                            }</ul>
+                             <ul class="list-group-item">
+                             <button onClick="deleteTask(${
+                               snapshot.key
+                             })" class="myButton btn btn-sm btn-danger float-right">
+                              Delete
+                            </button>
+                            <button onClick="editTask('${snapshot.key}','${
+      snapshot.val().bodyId
+    }')" class="myButton btn btn-sm btn-warning float-right">
+                              Edit 
+                            </button></ul>
+                        </li>
+                    `;
   });
+  // generateRow(snapshot, key){
+  // }
+}
+
+function deleteTask(key) {
+  let state = confirm("Are you sure you want to delete this...?");
+  if (state) {
+    let listId = document.getElementById(key);
+    listId.innerHTML = "";
+    console.log(key);
+    var deleteTask = _db.ref(`All Tasks/${key}`);
+    deleteTask.remove().then(function() {
+      let listId = document.getElementById(key);
+      listId.innerHTML = "";
+      console.log("deleting", key);
+      console.log("fetching newest data");
+    });
+  }
+  return false;
+}
+
+function editTask(key, bodyId) {
+  let getText = prompt("Enter your new task..");
+  var postData = {
+    description: getText
+  };
+
+  // var tasksRef = _db.ref();
+
+  // tasksRef.update(postData);
+  console.log("posting");
+  let tasksRef = _db.ref(`All Tasks/${key}`);
+  tasksRef.update(postData);
+  let desc = document.getElementById(bodyId);
+  console.log(bodyId);
+  desc.innerText = "Body : " + postData.description;
+  console.log("posted");
 }
 
 // function fetchTask() {
@@ -75,16 +143,4 @@ function fetchTasks() {
 //     `;
 //     return rr;
 //   }
-// }
-
-// function deleteTask(taskID) {
-//   var database = firebase.database()
-//   var deleteTask = database.ref(`All Tasks/${taskID}`);
-//   deleteTask.remove().then(function () {
-
-//     console.log("deleting", taskID);
-//     console.log("fetching newest data");
-
-//   })
-
 // }

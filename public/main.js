@@ -101,16 +101,15 @@ function editTask(key, bodyId) {
     description: getText
   };
 
+  let desc = document.getElementById(bodyId);
+  desc.innerText = "Body : " + postData.description;
+  console.log("posted");
   // var tasksRef = _db.ref();
 
   // tasksRef.update(postData);
   console.log("posting");
   let tasksRef = _db.ref(`All Tasks/${key}`);
   tasksRef.update(postData);
-  let desc = document.getElementById(bodyId);
-  console.log(bodyId);
-  desc.innerText = "Body : " + postData.description;
-  console.log("posted");
 }
 
 // function fetchTask() {

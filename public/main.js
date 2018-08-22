@@ -68,7 +68,7 @@ function fetchTasks() {
                             </button>
                             <button onClick="editTask('${snapshot.key}','${
       snapshot.val().bodyId
-    }')" class="myButton btn btn-sm btn-warning float-right">
+    }')" style="width:57px" class="myButton btn btn-sm mr-1 btn-warning float-right">
                               Edit 
                             </button></ul>
                         </li>
@@ -96,7 +96,8 @@ function deleteTask(key) {
 }
 
 function editTask(key, bodyId) {
-  let getText = prompt("Enter your new task..");
+  var getText = prompt("Enter your new task..");
+ if (getText) {
   var postData = {
     description: getText
   };
@@ -110,7 +111,12 @@ function editTask(key, bodyId) {
   console.log("posting");
   let tasksRef = _db.ref(`All Tasks/${key}`);
   tasksRef.update(postData);
+ } else {
+   return false;
+ }
 }
+
+
 
 // function fetchTask() {
 //   var taskDiv = document.getElementById("tasks");

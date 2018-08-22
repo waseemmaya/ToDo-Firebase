@@ -1,5 +1,5 @@
 var _db = firebase.database();
-fetchTasks();
+
 function addTask() {
   let form = document.querySelector("form");
   let formData = new FormData(form);
@@ -48,8 +48,8 @@ function fetchTasks() {
 
     // var row = generateRow(snapshot.val(), snapshot.key);
     // console.log(a);
-    var a = document.getElementById("tasks");
-    a.innerHTML += `
+    var tasks = document.getElementById("tasks");
+    tasks.innerHTML += `
                         <li class="list-group mb-1" id="${snapshot.key}">
                             <ul class="list-group-item">Title : ${
                               snapshot.val().title
@@ -97,26 +97,140 @@ function deleteTask(key) {
 
 function editTask(key, bodyId) {
   var getText = prompt("Enter your new task..");
- if (getText) {
-  var postData = {
-    description: getText
-  };
+  if (getText) {
+    var postData = {
+      description: getText
+    };
 
-  let desc = document.getElementById(bodyId);
-  desc.innerText = "Body : " + postData.description;
-  console.log("posted");
-  // var tasksRef = _db.ref();
+    let desc = document.getElementById(bodyId);
+    desc.innerText = "Body : " + postData.description;
+    console.log("posted");
+    // var tasksRef = _db.ref();
 
-  // tasksRef.update(postData);
-  console.log("posting");
-  let tasksRef = _db.ref(`All Tasks/${key}`);
-  tasksRef.update(postData);
- } else {
-   return false;
- }
+    // tasksRef.update(postData);
+    console.log("posting");
+    let tasksRef = _db.ref(`All Tasks/${key}`);
+    tasksRef.update(postData);
+  } else {
+    return false;
+  }
 }
 
+function signin() {
+  var form = document.querySelector("form");
+  var formData = new FormData(form);
 
+  var email = formData.get("email");
+  var password = formData.get("password");
+
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(function(a) {
+      let userID = a.user.uid;
+      console.log(userID);
+      var userRef = firebase.database().ref(`Users/${userID}`);
+
+      userRef.on("value", function(x) {
+        let data = x.val();
+        let uffName = data.displayName;
+        console.log(uffName);
+        let userName = localStorage.setItem("myName", uffName);
+
+        // location.href = "index.html";
+      });
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
+
+  form.reset();
+  return false;
+}
+
+function signup() {
+  var form = document.querySelector("form");
+  var formData = new FormData(form);
+
+  var email = formData.get("email");
+  var password = formData.get("password");
+
+  firebase
+    .auth()
+    .createUserWithEmailAndPassword(email, password)
+    .then(function(data) {
+      let userRef = _db.ref(`Users/${data.user.uid}`);
+      userRef.set({
+        displayName: formData.get("displayName"),
+        email: email,
+        phone: formData.get("phone"),
+        userID: data.user.uid
+      });
+      alert("Sign Up Successfully");
+      location.href = "signin.html";
+    })
+    .catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      alert(error);
+      // ...
+    });
+  form.reset();
+  return false;
+}
+
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    // User is signed in.
+    // var nameRef = database.ref(`users`);
+
+    // alert(data.fullname);
+    console.log("Signed in...!");
+    let nameRef = document.getElementById("name");
+    let myName = localStorage.getItem("myName");
+    nameRef.innerText = myName;
+    document.getElementById("signin").style.display = "none";
+    document.getElementById("signup").style.display = "none";
+    document.getElementById("signout").style.display = "inline";
+  } else {
+    // No user is signed in.
+    console.log("Not Signed in...!");
+    document.getElementById("signout").style.display = "none";
+  }
+});
+
+function signout() {
+  firebase
+    .auth()
+    .signOut()
+    .then(function() {
+      localStorage.clear();
+      console.log("Sign Out Successfully...!");
+      localStorage.clear();
+      alert("Sign out successfully...!");
+      window.location.replace("index.html");
+      // Sign-out successful.
+    })
+    .catch(function(error) {
+      // An error happened.
+    });
+}
+
+// checkLogin();
+// function checkLogin() {
+//   var user = firebase.auth().currentUser;
+//   if (user) {
+//     console.log(user);
+//     console.log("signed in");
+//   } else {
+//     // No user is signed in.
+//     console.log("Not signed in");
+//   }
+// }
 
 // function fetchTask() {
 //   var taskDiv = document.getElementById("tasks");

@@ -1,6 +1,5 @@
 var _db = firebase.database();
 
-
 function addTask() {
   let form = document.querySelector("form");
   let formData = new FormData(form);
@@ -83,7 +82,6 @@ function fetchTasks() {
 }
 
 function deleteTask(key) {
- 
   let state = confirm("Are you sure you want to delete this...?");
   if (state) {
     let listId = document.getElementById(key);
@@ -102,7 +100,6 @@ function deleteTask(key) {
 }
 
 function editTask(key, bodyId) {
-  
   var getText = prompt("Enter your new task..");
   if (getText) {
     var postData = {
@@ -145,10 +142,11 @@ function signin() {
         let uffName = data.displayName;
         console.log(uffName);
         let userName = localStorage.setItem("myName", uffName);
-
+        form.reset();
         location.href = "index.html";
       });
     })
+
     .catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
@@ -156,7 +154,6 @@ function signin() {
       // ...
     });
 
-  form.reset();
   return false;
 }
 
@@ -178,15 +175,16 @@ function signup() {
         phone: formData.get("phone"),
         userID: data.user.uid
       });
+
       userRef.on("value", function(x) {
         let data = x.val();
         let uffName = data.displayName;
         console.log(uffName);
         let userName = localStorage.setItem("myName", uffName);
-
+        form.reset();
+        alert("Sign Up Successfully");
         location.href = "index.html";
       });
-      alert("Sign Up Successfully");
     })
     .catch(function(error) {
       // Handle Errors here.
@@ -195,7 +193,7 @@ function signup() {
       alert(error);
       // ...
     });
-  form.reset();
+
   return false;
 }
 
@@ -213,6 +211,33 @@ firebase.auth().onAuthStateChanged(function(user) {
     document.getElementById("signin").style.display = "none";
     document.getElementById("signup").style.display = "none";
     document.getElementById("signout").style.display = "inline";
+    document.getElementById("main").innerHTML = `
+    
+            <h3 class="display-4 mb-3 text-center">To Do Tasks</h3>
+
+            <form onsubmit="return addTask()">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="title" placeholder="Title">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="description" placeholder="Add Your Task Here..."></textarea>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-primary mb-3" value="Submit">Submit</button>
+                </div>
+
+            </form>
+
+            <div id="tasks">
+                <!-- <table class="table table-hover">
+                                    <th>Title</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>Task State</th>
+                                </table> -->
+            </div>
+       
+    `;
   } else {
     document.getElementById("signout").style.display = "none";
     document.getElementById("main").innerHTML = `<div id="message">
@@ -223,7 +248,6 @@ firebase.auth().onAuthStateChanged(function(user) {
     `;
     // No user is signed in.
     console.log("Not Signed in...!");
-  
   }
 });
 
@@ -232,7 +256,6 @@ function signout() {
     .auth()
     .signOut()
     .then(function() {
-      
       console.log("Sign Out Successfully...!");
       localStorage.clear();
       alert("Sign out successfully...!");
@@ -243,4 +266,3 @@ function signout() {
       // An error happened.
     });
 }
-

@@ -1,5 +1,6 @@
 var _db = firebase.database();
 
+
 function addTask() {
   let form = document.querySelector("form");
   let formData = new FormData(form);
@@ -82,12 +83,14 @@ function fetchTasks() {
 }
 
 function deleteTask(key) {
+ 
   let state = confirm("Are you sure you want to delete this...?");
   if (state) {
     let listId = document.getElementById(key);
     listId.innerHTML = "";
     console.log(key);
-    var deleteTask = _db.ref(`All Tasks/${key}`);
+    let myID = localStorage.getItem("myID");
+    var deleteTask = _db.ref(`All Tasks/${myID}/${key}`);
     deleteTask.remove().then(function() {
       let listId = document.getElementById(key);
       listId.innerHTML = "";
@@ -99,6 +102,7 @@ function deleteTask(key) {
 }
 
 function editTask(key, bodyId) {
+  
   var getText = prompt("Enter your new task..");
   if (getText) {
     var postData = {
@@ -112,7 +116,8 @@ function editTask(key, bodyId) {
 
     // tasksRef.update(postData);
     console.log("posting");
-    let tasksRef = _db.ref(`All Tasks/${key}`);
+    let myID = localStorage.getItem("myID");
+    let tasksRef = _db.ref(`All Tasks/${myID}/${key}`);
     tasksRef.update(postData);
   } else {
     return false;
@@ -209,10 +214,16 @@ firebase.auth().onAuthStateChanged(function(user) {
     document.getElementById("signup").style.display = "none";
     document.getElementById("signout").style.display = "inline";
   } else {
-    document.getElementById("main").innerHTML = "<h1>Sign in First</h1>";
+    document.getElementById("signout").style.display = "none";
+    document.getElementById("main").innerHTML = `<div id="message">
+   
+    <h2 class="display-4">Sign in to add task</h2>
+   
+    <h3>This is user based task app, that's why you need to sign in first</h3>
+    `;
     // No user is signed in.
     console.log("Not Signed in...!");
-    document.getElementById("signout").style.display = "none";
+  
   }
 });
 
@@ -221,7 +232,7 @@ function signout() {
     .auth()
     .signOut()
     .then(function() {
-      localStorage.clear();
+      
       console.log("Sign Out Successfully...!");
       localStorage.clear();
       alert("Sign out successfully...!");
@@ -233,50 +244,3 @@ function signout() {
     });
 }
 
-// checkLogin();
-// function checkLogin() {
-//   var user = firebase.auth().currentUser;
-//   if (user) {
-//     console.log(user);
-//     console.log("signed in");
-//   } else {
-//     // No user is signed in.
-//     console.log("Not signed in");
-//   }
-// }
-
-// function fetchTask() {
-//   var taskDiv = document.getElementById("tasks");
-//   var database = firebase.database();
-//   var tasksRef = database.ref(`All Tasks`);
-//   tasksRef.on("child_added", function(snapshot) {
-//     var getTask = gettingData(snapshot.val(), snapshot.key);
-//     taskDiv.innerHTML += getTask;
-//   });
-
-//   function gettingData(snapshot, key) {
-//     const rr = `
-//     <li class="list-group mb-1">
-//         <ul class="list-group-item">Title : ${snapshot.Title}</ul>
-//         <ul class="list-group-item">Body : ${snapshot.Description}</ul>
-//         <ul class="list-group-item">Time : ${snapshot.date}</ul>
-//          <ul class="list-group-item"><button onClick="deleteTask(${
-//            snapshot.taskID
-//          })" class="myButton btn btn-sm btn-danger float-right">
-//                                Delete
-//                                </button>
-//                                <button onClick="editTask(${snapshot.taskID},'${
-//       snapshot.Title
-//     }')" class="myButton btn btn-sm btn-warning float-right">
-//                                Edit
-//                                </button></ul>
-
-//     </li>
-//     `;
-//     return rr;
-//   }
-// }
-
-function loginFirst() {
-  console("CHala");
-}

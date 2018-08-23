@@ -5,10 +5,11 @@ function addTask() {
   let formData = new FormData(form);
   let key = Math.floor(100444000 + Math.random() * 90012000);
   let bodyId = Math.floor(1004443000 + Math.random() * 940012000);
-
+  let myID = localStorage.getItem("myID");
   // creating new node in Firebase Database
   // .push() create unique KEY for sent data
-  let tasksRef = _db.ref(`All Tasks/${key}`);
+  // let tasksRef = _db.ref(`All Tasks/${key}`);
+  let tasksRef = _db.ref(`All Tasks/${myID}/${key}`);
   // .push() initialize a key for taskObj   // key ===> LKTXVheZ6JVBniEi8Ti
 
   console.log(tasksRef.key);
@@ -42,10 +43,12 @@ function addTask() {
 function fetchTasks() {
   var table = document.querySelector("tbody");
   // getting tasks Reference (node) for showing them
-  let tasksRef = _db.ref("All Tasks");
+  // let tasksRef = _db.ref(`All Tasks/${key}`);
+  let myID = localStorage.getItem("myID");
+  let tasksRef = _db.ref(`All Tasks/${myID}`);
   tasksRef.on("child_added", function(snapshot) {
     // console.log(snapshot.key);
-
+    console.log(snapshot.val(), snapshot.key);
     // var row = generateRow(snapshot.val(), snapshot.key);
     // console.log(a);
     var tasks = document.getElementById("tasks");
@@ -128,6 +131,7 @@ function signin() {
     .signInWithEmailAndPassword(email, password)
     .then(function(a) {
       let userID = a.user.uid;
+      let myID = localStorage.setItem("myID", userID);
       console.log(userID);
       var userRef = firebase.database().ref(`Users/${userID}`);
 
@@ -137,7 +141,7 @@ function signin() {
         console.log(uffName);
         let userName = localStorage.setItem("myName", uffName);
 
-        // location.href = "index.html";
+        location.href = "index.html";
       });
     })
     .catch(function(error) {
@@ -169,8 +173,15 @@ function signup() {
         phone: formData.get("phone"),
         userID: data.user.uid
       });
+      userRef.on("value", function(x) {
+        let data = x.val();
+        let uffName = data.displayName;
+        console.log(uffName);
+        let userName = localStorage.setItem("myName", uffName);
+
+        location.href = "index.html";
+      });
       alert("Sign Up Successfully");
-      location.href = "signin.html";
     })
     .catch(function(error) {
       // Handle Errors here.
@@ -189,6 +200,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     // var nameRef = database.ref(`users`);
 
     // alert(data.fullname);
+
     console.log("Signed in...!");
     let nameRef = document.getElementById("name");
     let myName = localStorage.getItem("myName");
@@ -197,6 +209,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     document.getElementById("signup").style.display = "none";
     document.getElementById("signout").style.display = "inline";
   } else {
+    document.getElementById("main").innerHTML = "<h1>Sign in First</h1>";
     // No user is signed in.
     console.log("Not Signed in...!");
     document.getElementById("signout").style.display = "none";
@@ -263,3 +276,7 @@ function signout() {
 //     return rr;
 //   }
 // }
+
+function loginFirst() {
+  console("CHala");
+}

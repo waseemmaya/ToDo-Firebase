@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>To Do App - Firebase</title>
-
+    <!-- <link rel="manifest" href="manifest.json" /> -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -56,29 +56,30 @@
         </nav>
     </div>
     <div class="container">
+        <div id="main">
+            <h3 class="display-4 mb-3 text-center">To Do Tasks</h3>
 
-        <h3 class="display-4 mb-3 text-center">To Do Tasks</h3>
+            <form onsubmit="return addTask()">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="title" placeholder="Title">
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="description" placeholder="Add Your Task Here..."></textarea>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-primary mb-3" value="Submit">Submit</button>
+                </div>
 
-        <form onsubmit="return addTask()">
-            <div class="form-group">
-                <input class="form-control" type="text" name="title" placeholder="Title">
-            </div>
-            <div class="form-group">
-                <textarea class="form-control" name="description" placeholder="Add Your Task Here..."></textarea>
-            </div>
-            <div class="text-center">
-                <button class="btn btn-primary mb-3" value="Submit">Submit</button>
-            </div>
+            </form>
 
-        </form>
-
-        <div id="tasks">
-            <!-- <table class="table table-hover">
+            <div id="tasks">
+                <!-- <table class="table table-hover">
                                     <th>Title</th>
                                     <th>Description</th>
                                     <th>Date</th>
                                     <th>Task State</th>
                                 </table> -->
+            </div>
         </div>
     </div>
 
@@ -99,7 +100,13 @@
         firebase.initializeApp(config);
     </script>
     <script src="main/main.js"></script>
-
+    <!-- <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                .register('/sw.js')
+                .then(function () { console.log("Service Worker Registered"); });
+        }
+    </script> -->
 </body>
 
 
